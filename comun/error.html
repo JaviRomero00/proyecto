@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body onLoad="timer()">
+   <div id="contador"></div>
+    <script language="javascript">
+
+		function timer(){
+			var t= setTimeout("timer()",1000);
+			document.getElementById('contador').innerHTML = 'Por favor espere '+ i-- +' segundos para volver a intentar el inicio de sesión';
+			if (i==-1){
+				document.getElementById('contador').innerHTML = location.href='login.php';
+				clearTimeout(t);
+			}
+		}
+		i=10;
+    </script>
+</body>
+</html>

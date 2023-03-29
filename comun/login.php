@@ -26,26 +26,44 @@
 
     <?php
         session_start();
+        $intentos = 3;
         require('conexion.php');
 
+        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+            if (isset($_POST['user']) && isset($_POST['password'])) {
+                $user    = md5($_POST['user']);
+                $password   = md5($_POST['password']);
 
-        if (isset($_POST['user']) && isset($_POST['password'])) {
-            $user    = md5($_POST['user']);
-            $password   = md5($_POST['password']);
+                $query = "SELECT * FROM usuarios
+                        WHERE usuario='$user' AND
+                        contrasena='$password'";
+                $resultado = pg_query($con, $query);
 
-            $query = "SELECT * FROM usuarios
-                      WHERE usuario='$user' AND
-                      contrasena='$password'";
-            $resultado = pg_query($con, $query);
+                    if(pg_num_rows($resultado) == 1) {
+                        $_SESSION['intentos'] = 0;
+                        $_SESSION['user'] = $user;
+                        header("Location: index.php");
+                    } else {
+                        if (!isset($_SESSION['intentos'])) {
+                            $_SESSION['intentos'] = 0;
+                        }
+                        $_SESSION['intentos']++;
 
-            if(pg_num_rows($resultado) == 1) {
-                $_SESSION['user'] = $user;
-                header("Location: index.php");
-            } else {
-                echo "Nombre de usuario o contraseña incorrectos.";
+                        if ($_SESSION['intentos'] >= $intentos) {
+                            $_SESSION['intentos'] = 0;
+                            header("Location: error.html");
+                        } else {
+                            echo "Nombre de usuario o contraseña incorrectos. Intento Nº " . $_SESSION['intentos'];
+                        }
+                    }
             }
         }
         pg_close($con);
     ?>
+
+    <p>¿No tienes cuenta? Registrese aqui: </p>
+    <a href="registrar.php">
+        <button> Registrarse </button>
+    </a>
 </body>
 </html>
