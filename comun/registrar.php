@@ -28,8 +28,7 @@ session_start();
                 }
 
                 $query = "SELECT * FROM usuarios
-                        WHERE usuario='$user' AND
-                        contrasena='$password'";
+                        WHERE usuario='$user'";
                 $resultado = pg_query($con, $query);
 
                 if (isset($user, $password, $password_repeat)) {
@@ -88,7 +87,7 @@ session_start();
                         $registrar = "INSERT INTO usuarios (usuario, contrasena)
                                       VALUES ('$user', '$password')";
                         pg_query($con, $registrar);
-                        //header('Location: login.php');
+                        header('Location: login.php');
                     }
 
                 }
@@ -121,5 +120,7 @@ session_start();
         </div>
         <button type="submit"> Registrar </button>
     </form>
+    <p>¿Ya tienes cuenta? Inicia sesión aquí:</p>
+    <a href="login.php"> <button> Login </button> </a>
 </body>
 </html>

@@ -11,7 +11,7 @@
     if (!isset($_SESSION['tiempo'])) {
         $_SESSION['tiempo'] = time();
     }
-    else if (time() - $_SESSION['tiempo'] > 30) {
+    else if (time() - $_SESSION['tiempo'] > 180) {
         session_destroy();
         header("Location: login.php");
         die();
@@ -39,23 +39,29 @@
         $nombre   = $_POST['nombre'];
         $telefono = $_POST['telefono'];
 
-        if (preg_match('/[A-Za-z]/', $_POST['nombre']) && preg_match('/[[:digit:]]/', $_POST['telefono'])) {
-
+        if (preg_match('/^[a-zA-Z\s]+$/', $_POST['nombre']) && preg_match('/[[:digit:]]/', $_POST['telefono'])) {
             $query = "INSERT INTO contactos (nombre, telefono)
                         VALUES ('$nombre', '$telefono') RETURNING id;";
 
-            $res = pg_query($con, $query);
+            $consulta = "SELECT * FROM contactos
+                         WHERE telefono = '$telefono';";
 
-            if (pg_num_rows($res) != 0) {
-                $fila = pg_fetch_array($res, 0);
+            $res = pg_query($con, $consulta);
+
+            if (pg_num_rows($res) == 0) {
+                pg_query($con, $query);
                 echo "Contacto guardado correctamente";
             } else {
-                echo "Error al guardar el contacto";
+                echo "Error al guardar el contacto, el teléfono ya esta registrado";
             }
-        } else {
+        } if (!preg_match('/^[a-zA-Z\s]+$/', $_POST['nombre']) || !preg_match('/[[:digit:]]/', $_POST['telefono'])){
             echo "Error al guardar el contacto, algunos caracteres no son validos";
         }
         pg_close($con);
     ?>
+    <br>
+    <a href="logout.php">
+        <button> Cerrar sesión</button>
+    </a>
 </body>
 </html>
